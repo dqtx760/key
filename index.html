@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全密码生成器 - 大强同学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        klein: {
+                            start: '#002FA7', // 克莱因蓝近似色
+                            end: '#001155'    // 更深的蓝色用于渐变
+                        },
+                        primary: {
+                            light: '#4f46e5',
+                            dark: '#6366f1'
+                        },
+                        secondary: {
+                            light: '#10b981',
+                            dark: '#34d399'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .copy-success {
+            animation: slideUp 0.3s ease-out;
+        }
+        /* 增加滑块尺寸 */
+        input[type=range]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            margin-top: -6px;
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+        }
+    </style>
+</head>
+<!-- 背景修改为指定图片 -->
+<body class="min-h-screen flex items-center justify-center font-sans" style="background-image: url('https://gitee.com/da-qiang-classmate/typora/raw/master/image/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%82%8D%E6%99%9A%E8%B7%AF%E7%81%AF-%E5%B1%B1%E8%84%89-%E6%B0%B4%E9%9D%A2.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <!-- 容器放大 max-w-4xl -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="mb-10 text-center">
+            <!-- 标题文字放大并调整为浅色以适应深色背景 -->
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-white drop-shadow-lg">
+                安全密码生成器
+            </h1>
+            <p class="text-blue-200 text-lg md:text-xl opacity-90">
+                一键生成高强度、安全的随机密码，保护您的在线账户
+            </p>
+        </header>
+
+        <main class="animate-fade-in">
+            <!-- 卡片内边距增加 p-8 -->
+            <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 mb-8 transition-all duration-300 border border-white/20 dark:border-gray-700">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="relative flex-grow mr-4">
+                        <!-- 输入框文字放大 text-2xl, 高度增加 py-4 -->
+                        <input
+                            type="text"
+                            id="password-output"
+                            class="w-full px-6 py-4 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 font-mono text-2xl md:text-3xl tracking-wider text-gray-700 dark:text-gray-100 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors"
+                            readonly
+                        >
+                        <div id="copy-success" class="absolute right-3 top-3 hidden bg-green-500 text-white text-sm px-3 py-1 rounded-md font-medium shadow-sm">
+                            已复制!
+                        </div>
+                    </div>
+                    <!-- 按钮放大 p-4 -->
+                    <button
+                        id="copy-btn"
+                        class="p-4 md:p-5 rounded-xl bg-primary-light dark:bg-primary-dark text-white hover:bg-primary-dark hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary-light/50 shadow-md"
+                        title="复制密码"
+                    >
+                        <i class="fas fa-copy text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="grid gap-6 mb-8">
+                    <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
+                        <label for="password-length" class="font-bold text-lg md:text-xl text-gray-700 dark:text-gray-200">密码长度: <span id="length-value" class="text-primary-light dark:text-primary-dark ml-2">8</span></label>
+                        <input
+                            type="range"
+                            id="password-length"
+                            min="4"
+                            max="32"
+                            value="8"
+                            class="w-1/2 h-3 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-primary-light"
+                        >
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 复选框和标签整体放大 -->
+                        <label class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                id="uppercase"
+                                checked
+                                class="w-6 h-6 text-primary-light bg-white border-2 border-gray-300 rounded focus:ring-primary-light dark:focus:ring-primary-dark accent-primary-light"
+                            >
+                            <span class="ml-3 text-lg font-medium text-gray-700 dark:text-gray-200">包含大写字母 (A-Z)</span>
+                        </label>
+                        <label class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                id="lowercase"
+                                checked
+                                class="w-6 h-6 text-primary-light bg-white border-2 border-gray-300 rounded focus:ring-primary-light dark:focus:ring-primary-dark accent-primary-light"
+                            >
+                            <span class="ml-3 text-lg font-medium text-gray-700 dark:text-gray-200">包含小写字母 (a-z)</span>
+                        </label>
+                        <label class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                id="numbers"
+                                checked
+                                class="w-6 h-6 text-primary-light bg-white border-2 border-gray-300 rounded focus:ring-primary-light dark:focus:ring-primary-dark accent-primary-light"
+                            >
+                            <span class="ml-3 text-lg font-medium text-gray-700 dark:text-gray-200">包含数字 (0-9)</span>
+                        </label>
+                        <label class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                id="symbols"
+                                checked
+                                class="w-6 h-6 text-primary-light bg-white border-2 border-gray-300 rounded focus:ring-primary-light dark:focus:ring-primary-dark accent-primary-light"
+                            >
+                            <span class="ml-3 text-lg font-medium text-gray-700 dark:text-gray-200">包含特殊字符 (@&)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <!-- 生成按钮放大并居中 -->
+                    <button
+                        id="generate-btn"
+                        class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-primary-light to-primary-dark hover:from-primary-dark hover:to-primary-light text-white text-xl font-bold rounded-xl hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary-light/30 flex items-center justify-center"
+                    >
+                        <i class="fas fa-sync-alt mr-3"></i> 生成新密码
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center text-blue-200/80 text-base">
+            <div class="flex justify-center space-x-6">
+                <!-- 已移除"网站"链接 -->
+                <a href="https://github.com/dqtx760" target="_blank" class="hover:text-white transition-colors flex items-center">
+                    <i class="fab fa-github mr-2 text-xl"></i> GitHub
+                </a>
+                <a href="https://x.com/dqtx760" target="_blank" class="hover:text-white transition-colors flex items-center">
+                    <i class="fab fa-twitter mr-2 text-xl"></i> Twitter
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordOutput = document.getElementById('password-output');
+            const generateBtn = document.getElementById('generate-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const copySuccess = document.getElementById('copy-success');
+            const lengthSlider = document.getElementById('password-length');
+            const lengthValue = document.getElementById('length-value');
+            const uppercaseCheckbox = document.getElementById('uppercase');
+            const lowercaseCheckbox = document.getElementById('lowercase');
+            const numbersCheckbox = document.getElementById('numbers');
+            const symbolsCheckbox = document.getElementById('symbols');
+
+            function generatePassword() {
+                const length = parseInt(lengthSlider.value);
+                const uppercase = uppercaseCheckbox.checked ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '';
+                const lowercase = lowercaseCheckbox.checked ? 'abcdefghijklmnopqrstuvwxyz' : '';
+                const numbers = numbersCheckbox.checked ? '0123456789' : '';
+                const symbols = symbolsCheckbox.checked ? '@&' : '';
+
+                let chars = uppercase + lowercase + numbers + symbols;
+                let password = '';
+
+                if (!chars.length) {
+                    passwordOutput.value = '';
+                    return;
+                }
+
+                for (let i = 0; i < length; i++) {
+                    const randomIndex = Math.floor(Math.random() * chars.length);
+                    password += chars[randomIndex];
+                }
+
+                passwordOutput.value = password;
+            }
+
+            function copyPassword() {
+                if (!passwordOutput.value) return;
+                navigator.clipboard.writeText(passwordOutput.value).then(() => {
+                    copySuccess.classList.remove('hidden');
+                    copySuccess.classList.add('copy-success');
+                    setTimeout(() => {
+                        copySuccess.classList.add('hidden');
+                        copySuccess.classList.remove('copy-success');
+                    }, 2000);
+                });
+            }
+
+            generateBtn.addEventListener('click', generatePassword);
+            copyBtn.addEventListener('click', copyPassword);
+            lengthSlider.addEventListener('input', function() {
+                lengthValue.textContent = this.value;
+                generatePassword();
+            });
+            [uppercaseCheckbox, lowercaseCheckbox, numbersCheckbox, symbolsCheckbox].forEach(checkbox => {
+                checkbox.addEventListener('change', generatePassword);
+            });
+
+            generatePassword();
+
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (event.matches) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            });
+        });
+    </script>
+</body>
+</html>
